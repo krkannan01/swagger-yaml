@@ -1,0 +1,3130 @@
+openapi: 3.0.0
+info:
+  description: " Factbase® organizes AML system data as records conforming to a given
+    data model and associated with a channel. Data models are descriptions of
+    record attributes and types and can themselves be created and stored in
+    Factbase® and referenced by assigned names.  Data can be ingested into
+    *channels* either using normal REST API calls, or by creating streaming
+    ingests from a specified messaging topic in a Kafka cluster configured for
+    use by Factbase.  Factbase® can be configured with a variety of storage
+    backends for various durability, querying and processing needs. ## Core
+    concepts * **Data model** :: A structure describing the types of various
+    fields   that constitute a record that is stored in Factbase®. Data models
+    are    identified in the system using a name.    * **Channel** :: A channel
+    in Factbase is analogous to a table in   conventional RDBMS systems. All
+    data ingested into Factbase is    associated with a channel. Channels also
+    serve as the unit of   access control for the data in Factbase via a
+    permission system   enforced by Quant ID. The data stored in a channel is
+    expected to   conform to an associated data model.    * **Stream** ::
+    Factbase can be configured to talk to an existing    Apache Kafka setup from
+    which it can ingest data streams continuously.   These streams are
+    identified using Kafka toppic IDs and can be sent to   specific Factbase
+    channels. Multiple ingestions can happen into a   single channel as long as
+    the data models associated with the streams   are all identical.  ## System
+    requirements  Factbase® requires Postgresql >= 9.x, Kafka >= 10.x,
+    Elasticsearch >= 5.x, Quant-ID at a minimum to operate. ## Supported
+    backends  Besides ElasticSearch, which is a required backend, Factbase®
+    can be configured to use the following storage and query engines under the
+    hood for long term data storage - SAP Hana, Apache Hive/Hadoop, Apache
+    Cassandra and PostgreSQL. ## System and data security In-transit security of
+    data is ensured by enforcing https-only connections to the Factbase REST API
+    end point. The granularity of access to data within Factbase® is the
+    channel, which is roughly comparable to a table in standard RDBMS
+    systems.  The Quant ID system is used to manage the roles and the assigned
+    access permissions for various channels. Factbase uses role based access to
+    grant/deny access to various channels in a multi-tenant setup.  All REST API
+    endpoints require that a valid JWT auth token be present in request headers.
+    The token, obtained from Quant ID, provides information about roles and
+    which dictate the channels that the user possessing the token has access to.
+    So no additional information beyond the token is  necessary for access
+    control management."
+  version: 1.0.0
+  title: Factbase® API
+  contact:
+    {}
+  license:
+    url: http://unlicense.org
+tags:
+  - name: Channels
+    description: API endpoints for Channels
+  - name: Customer List Membership
+    description: API endpoints for Customer List Membership
+  - name: Customers
+    description: API endpoints for Customers
+  - name: Risk Assessment History
+    description: "API endpoints for Risk Assessment History "
+  - name: Risk Assessments
+    description: "API endpoints for Risk Assessments "
+  - name: Risk Categories
+    description: "API endpoints for Risk Categories "
+  - name: Risk Model Params
+    description: "API endpoints for Risk Model Params "
+  - name: Risk Models
+    description: "API endpoints for Risk Models "
+  - name: Risk Profiles
+    description: API endpoints for Risk Profiles
+  - name: Watchlists
+    description: API endpoints for Watchlists
+paths:
+  /channels:
+    get:
+      tags:
+        - Channels
+      summary: Get the list of all channels
+      operationId: getChannels
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Channels
+      summary: Create a channel
+      operationId: postChannels
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/postChannelsBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/channels/name/{name}":
+    get:
+      tags:
+        - Channels
+      summary: Get details of a specific channel by name
+      operationId: getChannelByName
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          description: name of the channel to be get
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /channels/sources:
+    get:
+      tags:
+        - Channels
+      summary: Get list of all the sources
+      operationId: getSources
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/channels/sources/{id}/filetype":
+    get:
+      tags:
+        - Channels
+      summary: Get list of all the file types of a specific source
+      operationId: getFileTypesBySourceId
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the source to be get
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/channels/{id}":
+    get:
+      tags:
+        - Channels
+      summary: Get details of a specific channel
+      operationId: getChannelById
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the channel to be get
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    put:
+      tags:
+        - Channels
+      summary: Update a channel
+      operationId: putChannel
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the channel to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/postChannelsBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    delete:
+      tags:
+        - Channels
+      summary: Delete a channel
+      operationId: deleteChannel
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the channel to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/channels/{id}/data":
+    get:
+      tags:
+        - Channels
+      summary: Get index values of a channel data
+      operationId: getIndexValues
+      parameters:
+        - name: channelId
+          in: path
+          description: channelId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Channels
+      summary: Update DAndB Index of a channel data
+      operationId: postDAndBIndexBody
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: channelId
+          in: path
+          description: channelId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/postDAndBIndexBodyIndexdata"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/channels/{id}/data/{key}":
+    put:
+      tags:
+        - Channels
+      summary: Create DAndB Index of a channel data
+      operationId: postDAndBIndexBody_1
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: channelId
+          in: path
+          description: channelId
+          required: true
+          schema:
+            type: string
+        - name: indexColumn
+          in: path
+          description: indexColumn
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/postDAndBIndexBodyIndexdata"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/channels/{id}/search?type={value}":
+    post:
+      tags:
+        - Channels
+      summary: Search the fields that matches the exact values
+      operationId: searchFieldsExactMatch
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/postDAndBIndexBodyIndexdata"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /customermembership:
+    post:
+      tags:
+        - Customer List Membership
+      summary: Populate customer list membership table
+      operationId: postCustomerMemberships
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: tempTable
+          in: path
+          description: temp table from which the data has to be populated
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /customers:
+    get:
+      tags:
+        - Customers
+      summary: Get all customers
+      operationId: getCustomers_1
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Customers
+      summary: Create customers
+      operationId: postCustomersBody
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: List«CustomerReq»
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    put:
+      tags:
+        - Customers
+      summary: Update customers
+      operationId: putCustomersBody
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putCustomersBodyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /customers/address:
+    post:
+      tags:
+        - Customers
+      summary: Create customers address
+      operationId: postCustomersAddressBody
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: AddressReq
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /customers/audit:
+    get:
+      tags:
+        - Customers
+      summary: Get all customer change lookup fields
+      operationId: getChangeLookup
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Customers
+      summary: Create customer change lookup fields
+      operationId: postChangeLookup
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putCustomersBodyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /customers/phone:
+    post:
+      tags:
+        - Customers
+      summary: Create customer phone number
+      operationId: postCustomersPhoneBody
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: PhoneNumReq
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/customers/{id}":
+    get:
+      tags:
+        - Customers
+      summary: Get a particular customer by id
+      operationId: getCustomersId
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the customer to get
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    put:
+      tags:
+        - Customers
+      summary: Update a customer by id
+      operationId: putCustomersIdBody
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the customer to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putCustomersBodyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/customers/{id}/details":
+    get:
+      tags:
+        - Customers
+      summary: Get all customers.
+      operationId: getCustomers
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/customers/{id}/network":
+    get:
+      tags:
+        - Customers
+      summary: Get a customer's network data
+      operationId: getNetworkData
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+        - name: level
+          in: query
+          description: level
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: fromDate
+          in: query
+          description: fromDate
+          required: false
+          schema:
+            type: string
+        - name: toDate
+          in: query
+          description: toDate
+          required: false
+          schema:
+            type: string
+        - name: collapse
+          in: query
+          description: collapse
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /riskassessmenthistory:
+    get:
+      tags:
+        - Risk Assessment History
+      summary: Get all risk assessment history
+      operationId: getRiskAssessmentHistory
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+            default: bearer 234321
+        - name: allRequestParams
+          in: query
+          description: allRequestParams
+          required: true
+          schema:
+            type: string
+            items:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Risk Assessment History
+      summary: Create a new risk assement history
+      operationId: postRiskAssessmentHistory
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+            default: bearer 234321
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Array of JSON Risk Assessment history
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /riskassessments:
+    get:
+      tags:
+        - Risk Assessments
+      summary: Get all risk assessments
+      operationId: getRiskAssessments
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: allRequestParams
+          in: query
+          description: allRequestParams
+          required: true
+          schema:
+            type: string
+            items:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Risk Assessments
+      summary: Create a new risk assessment
+      operationId: postRiskAssessments
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/postRiskAssessmentsBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/riskassessments/{id}":
+    put:
+      tags:
+        - Risk Assessments
+      summary: Update an existing risk assessment
+      operationId: putRiskAssessments
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the risk assessment to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putCustomersBodyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /riskcategories:
+    get:
+      tags:
+        - Risk Categories
+      summary: Get all risk categories
+      operationId: getRiskCategories
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: allRequestParams
+          in: query
+          description: allRequestParams
+          required: true
+          schema:
+            type: string
+            items:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Risk Categories
+      summary: Create a new risk category
+      operationId: postRiskCategories
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: RiskCategoriesReq
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/riskcategories/{id}":
+    put:
+      tags:
+        - Risk Categories
+      summary: Update an existing risk category
+      operationId: putRiskCategories
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the RiskCategory to be update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: RiskCategoryReq
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /riskmodelparams:
+    get:
+      tags:
+        - Risk Model Params
+      summary: Get all risk model params
+      operationId: getRiskModelParams
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: allRequestParams
+          in: query
+          description: allRequestParams
+          required: true
+          schema:
+            type: string
+            items:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Risk Model Params
+      summary: Create a new risk model param
+      operationId: postRiskModelParams
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Array of JSON Risk Model Params
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/riskmodelparams/{id}":
+    put:
+      tags:
+        - Risk Model Params
+      summary: Update an existing risk model param
+      operationId: putRiskModelParams
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the risk model params to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putCustomersBodyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /riskmodels:
+    get:
+      tags:
+        - Risk Models
+      summary: Get all risk models
+      operationId: getRiskModels
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: allRequestParams
+          in: query
+          description: allRequestParams
+          required: true
+          schema:
+            type: string
+            items:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Risk Models
+      summary: Create a new risk model
+      operationId: postRiskModels
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Array of JSON Risk Models
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/riskmodels/{id}":
+    put:
+      tags:
+        - Risk Models
+      summary: Update an existing risk model
+      operationId: putRiskModels
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the risk model to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putCustomersBodyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /riskprofiles:
+    get:
+      tags:
+        - Risk Profiles
+      summary: Get all risk profiles with filters in param
+      operationId: getRiskProfile
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: allRequestParams
+          in: query
+          description: allRequestParams
+          required: true
+          schema:
+            type: string
+            items:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Risk Profiles
+      summary: Create a new risk profile of a customer
+      operationId: postRiskProfile
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/postRiskAssessmentsBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/riskprofiles/{id}":
+    put:
+      tags:
+        - Risk Profiles
+      summary: Update an existing risk profile of a customer
+      operationId: putRiskProfile
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: customer id of the risk profile to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putCustomersBodyBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  /watchlists:
+    get:
+      tags:
+        - Watchlists
+      summary: Get all watchlists
+      operationId: getWatchLists
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Watchlists
+      summary: Create watchlist
+      operationId: postWatchLists
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Array of JSON watchlists
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/watchlists/{id}":
+    get:
+      tags:
+        - Watchlists
+      summary: Get a particular watchlist by id
+      operationId: getWatchListById
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the watchlist to get
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    put:
+      tags:
+        - Watchlists
+      summary: Update a watchlist
+      operationId: putWatchList
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the watchlist to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putWatchListBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/watchlists/{id}/bulk":
+    post:
+      tags:
+        - Watchlists
+      summary: Create bulk of watchlist entires for a watchlist id
+      operationId: postBulkOfWatchListEntries
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the watchlist to get the corresponding watchlist entries
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: multiple watch list entries
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/watchlists/{id}/entries":
+    get:
+      tags:
+        - Watchlists
+      summary: Get watchlist entires by watchlist id
+      operationId: getWatchListEntries
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the watchlist to get the corresponding watchlist entries
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    post:
+      tags:
+        - Watchlists
+      summary: Create watchlist entires for a watchlist id
+      operationId: postWatchListEntries
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the watchlist to get the corresponding watchlist entries
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: watch list entries
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+  "/watchlists/{id}/entries/{eid}":
+    get:
+      tags:
+        - Watchlists
+      summary: Get watchlist entires by watchlist id and watchlist entries id
+      operationId: getWatchListEntriesById
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of watchlist
+          required: true
+          schema:
+            type: string
+        - name: eid
+          in: path
+          description: id of watchlist entries
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+    put:
+      tags:
+        - Watchlists
+      summary: Update watchlist entries
+      operationId: putWatchListEntries
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id of the watchlist to update
+          required: true
+          schema:
+            type: string
+        - name: eid
+          in: path
+          description: id of watchlist entries
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/putWatchListBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "409":
+          description: Conflict Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Json"
+      security:
+        - bearer:
+            []
+servers:
+  - url: //localhost:8086/v1
+components:
+  requestBodies:
+    putWatchListBody:
+      content:
+        application/json:
+          schema:
+            type: string
+      description: watch list
+    postRiskAssessmentsBody:
+      content:
+        application/json:
+          schema:
+            type: string
+      description: Array of JSON Risk Assessments
+    putCustomersBodyBody:
+      content:
+        application/json:
+          schema:
+            type: string
+      description: String
+    postChannelsBody:
+      content:
+        application/json:
+          schema:
+            type: string
+      description: channelReq
+    postDAndBIndexBodyIndexdata:
+      content:
+        application/json:
+          schema:
+            type: string
+      description: indexData
+  schemas:
+    Json:
+      type: object
+      title: Json
+      description: Json object
